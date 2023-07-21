@@ -610,17 +610,6 @@ mod runtime {
         "   ret",
         ".popsection",
     );
-
-    /// You can call a function or lambda function without CPU endinit protection.
-    #[inline]
-    pub fn call_without_endinit<R>(f: impl FnOnce() -> R) -> R {
-        crate::wdtcon::clear_cpu_endinit();
-        crate::wdtcon::clear_safety_endinit();
-        let result = f();
-        crate::wdtcon::set_safety_endinit();
-        crate::wdtcon::set_cpu_endinit();
-        result
-    }
 }
 
 #[cfg(not(target_arch = "tricore"))]
@@ -639,16 +628,32 @@ mod runtime {
     macro_rules! post_init {
         ($path:path) => {};
     }
-
-    #[inline]
-    pub fn call_without_endinit<R>(f: impl FnOnce() -> R) -> R {
-        crate::wdtcon::clear_cpu_endinit();
-        crate::wdtcon::clear_safety_endinit();
-        let result = f();
-        crate::wdtcon::set_safety_endinit();
-        crate::wdtcon::set_cpu_endinit();
-        result
-    }
 }
 
 pub use runtime::*;
+
+#[inline]
+pub fn call_without_endinit<R>(f: impl FnOnce() -> R) -> R {
+    crate::wdtcon::clear_cpu_endinit();
+    crate::wdtcon::clear_safety_endinit();
+    let result = f();
+    crate::wdtcon::set_safety_endinit();
+    crate::wdtcon::set_cpu_endinit();
+    result
+}
+
+#[inline]
+pub fn call_without_safety_endinit<R>(f: impl FnOnce() -> R) -> R {
+    crate::wdtcon::clear_safety_endinit();
+    let result = f();
+    crate::wdtcon::set_safety_endinit();
+    result
+}
+
+#[inline]
+pub fn call_without_cpu_endinit<R>(f: impl FnOnce() -> R) -> R {
+    crate::wdtcon::clear_cpu_endinit();
+    let result = f();
+    crate::wdtcon::set_cpu_endinit();
+    result
+}
