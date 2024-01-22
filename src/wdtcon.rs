@@ -20,11 +20,11 @@ fn dsync() {}
 /// Clears endinit bit for  protection against unintentional modifications.
 /// See section 11.4 of AURIXTM TC3xx Target specification
 pub fn clear_safety_endinit() {
-    let mut passwd: u32 = unsafe { pac::SCU.wdtscon0().read() }.get_raw();
+    let mut passwd: u32 = unsafe { pac::SCU.wdts().wdtscon0().read() }.get_raw();
     passwd &= 0xffffff00;
 
     unsafe {
-        pac::SCU.wdtscon0().init(|w| {
+        pac::SCU.wdts().wdtscon0().init(|w| {
             w.set_raw(passwd | 0xf1)
         })
     };
@@ -32,22 +32,22 @@ pub fn clear_safety_endinit() {
     dsync();
 
     unsafe {
-        pac::SCU.wdtscon0().init(|w| {
+        pac::SCU.wdts().wdtscon0().init(|w| {
             w.set_raw(passwd | 0xf2)
         })
     };
 
     // read back new value >
-    let _ = unsafe { pac::SCU.wdtscon0().read() }.get_raw();
+    let _ = unsafe { pac::SCU.wdts().wdtscon0().read() }.get_raw();
 }
 
 /// Sets endinit bit for  protection against unintentional modifications.
 pub fn set_safety_endinit() {
-    let mut passwd = unsafe { pac::SCU.wdtscon0().read() }.get_raw();
+    let mut passwd = unsafe { pac::SCU.wdts().wdtscon0().read() }.get_raw();
     passwd &= 0xffffff00;
 
     unsafe {
-        pac::SCU.wdtscon0().init(|w| {
+        pac::SCU.wdts().wdtscon0().init(|w| {
             w.set_raw(passwd | 0xf1)
         })
     };
@@ -56,13 +56,13 @@ pub fn set_safety_endinit() {
 
     passwd |= 3;
     unsafe {
-        pac::SCU.wdtscon0().init(| w| {
+        pac::SCU.wdts().wdtscon0().init(| w| {
             w.set_raw(passwd | 0xf2)
         })
     };
 
     // read back new value >
-    let _ = unsafe { pac::SCU.wdtscon0().read() }.get_raw();
+    let _ = unsafe { pac::SCU.wdts().wdtscon0().read() }.get_raw();
 }
 
 /// Clears endinit bit for  protection against unintentional modifications for CPU0 core.
@@ -118,7 +118,7 @@ pub fn set_cpu_endinit() {
 #[no_mangle]
 pub fn disable_safety_watchdog() {
     clear_safety_endinit();
-    unsafe { pac::SCU.wdtscon1().modify(|p| p.dr().set(true)) };
+    unsafe { pac::SCU.wdts().wdtscon1().modify(|p| p.dr().set(tc37x_pac::scu::wdts::wdtscon1::Dr::CONST_11)) };
     set_safety_endinit();
 }
 
