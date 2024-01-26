@@ -7,4 +7,4 @@ edition = "2021"
 
 [dependencies]
 defmt = "0.3.5"
-tc37x-pac = { git = "ssh://git@git.bwlocal.it/bw-rust/tc37x-pac.git", branch = "develop", features = ["scu"] }
+tc37x-pac = { path = "../tc37x-pac", features = ["scu"] }
