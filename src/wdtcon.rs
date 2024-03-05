@@ -24,7 +24,7 @@ pub fn clear_safety_endinit() {
     passwd &= 0xffffff00;
 
     unsafe {
-        pac::SCU.wdts().wdtscon1().init(|w| {
+        pac::SCU.wdts().wdtscon0().init(|w| {
             w.set_raw(passwd | 0xf1)
         })
     };
