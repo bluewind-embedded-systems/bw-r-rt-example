@@ -1,8 +1,8 @@
 // lock/unlock the EDNINIT bit in the cpu WDTCON and safety WDTCON
 // to access ENDINIT protected SFRs such as BIV, BTY, CLC.
 
-use tc37x_pac as pac;
-use tc37x_pac::RegisterValue;
+use tc37x as pac;
+use tc37x::RegisterValue;
 
 #[cfg(target_arch = "tricore")]
 #[inline]
@@ -118,7 +118,7 @@ pub fn set_cpu_endinit() {
 #[no_mangle]
 pub fn disable_safety_watchdog() {
     clear_safety_endinit();
-    unsafe { pac::SCU.wdts().wdtscon1().modify(|p| p.dr().set(tc37x_pac::scu::wdts::wdtscon1::Dr::CONST_11)) };
+    unsafe { pac::SCU.wdts().wdtscon1().modify(|p| p.dr().set(1u8.into()))};
     set_safety_endinit();
 }
 
